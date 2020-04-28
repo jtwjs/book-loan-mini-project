@@ -1,0 +1,27 @@
+ORA-12519, TNS:no appropriate service handler found
+
+sql_plus 접속
+
+sys 접속
+
+Alter system set processes = 값 scope = spfile;
+
+shutdown immediate;
+
+startup
+
+--
+
+sys 비번모를 때!
+
+sql_plus 접속
+
+"sys as sysdba" 입력
+
+paswword 입력 없이 엔터
+
+"show user'' 현재 접속계정 확인
+
+alter user sys identified by 바꿀비번; 
+
+conn sys/1234 as sysdba; //정상 변경됬는지 확인
