@@ -38,13 +38,31 @@
 *도서 테이블
 속성
 
-0. ISBN
-1. 책제목
-2. 저자
-3. 출판사
-4. 출간일
-5. 위치
-6. 청구기호
-7. 재고
+0. 청구기호(claim_symbol)
+1. 책제목 (title)
+2. 저자	(author)
+3. 출판사	(publisher)
+4. 출간일	(publication_date) number
+5. 위치	(location)
+6. 재고	(inventory_quantity) number
 
 ### 다독왕 테이블도 만들어보기~ 년 단위로~《1》
+
+
+Select X.* FROM"
+					+ " (Select ROWNUM rnum, A.ID,A.NAME FROM BOOK_MEMBER A"
+					+ " order by A.NAME asc) X"
+					+ " where rnum between ? and ?+9
+
+select* from ( 
+                select rownum rnum,A.*
+                from (
+                        select *
+                        from book_member
+                        order by ?
+                     ) A
+                where rownum<=?
+             )
+where rnum>=?;
+
+select *

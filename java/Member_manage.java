@@ -4,7 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Scanner;
 
-public class Member_management {
+public class Member_manage {
 	Scanner sc = new Scanner(System.in);
 	private String id,mb_date,name,phone,email,addr;
 	static public String driver = "oracle.jdbc.driver.OracleDriver";
@@ -20,7 +20,7 @@ public class Member_management {
 		name = sc.next();
 		System.out.print("# [폰번호]▶ ");//1.폰번호 양식알고리즘 작성
 		phone = sc.next();
-		System.out.print("# [이메일]▶ ");
+		System.out.print("# [이메일]▶ ");	
 		email = sc.next();
 		System.out.print("# [주소지]▶ ");
 		addr = sc.next();
@@ -43,7 +43,7 @@ public class Member_management {
 			if(n == 1) 
 				System.out.println("＃ 성공적으로 추가되었습니다... ");
 			else 
-				System.out.println("＃ ID가 중복되었습니다...");
+				System.out.println("＃ ID가 중복되었습니다..."); //수정해야함
 			
 		}catch(Exception e) {
 			System.out.println("＃ DB 연결에 실패했습니다...");
@@ -59,47 +59,79 @@ public class Member_management {
 			}
 		}
 	}
-	public void outputData() {
+	
+	public void outputOrder(){
+		while(true) {
+			System.out.println();
+			System.out.println("＃＃＃＃＃＃【회원 목록 검색】＃＃＃＃＃＃");
+			System.out.println("＃　　　 　　[1]ID 오름차순 　  　　　＃");
+			System.out.println("＃　　　 　　[2]이름 오름차순　    　　　＃");
+			System.out.println("＃　　　 　　[3]상위 메뉴   　　　　　  ＃");
+			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
+			System.out.print("＃ 메뉴 선택 ▶ ");
+			int select = sc.nextInt(); //지역변수 select
+			switch(select) {
+				case 1: outputData("Select * FROM"
+						+ " (Select ROWNUM rnum, A.* FROM"
+						+ " (Select ID,NAME FROM BOOK_MEMBER"
+						+ " order by id asc) A"
+						+ " where ROWNUM <= ?+9)"
+						+ " where rnum >= ?"); break;
+				case 2: outputData("Select * FROM"
+						+ " (Select ROWNUM rnum, A.* FROM"
+						+ " (Select ID,NAME FROM BOOK_MEMBER"
+						+ " order by name asc) A"
+						+ " where ROWNUM <= ?+9)"
+						+ " where rnum >= ?"); break;
+				case 3: return;
+				default:  System.out.println("# 잘못 입력하셨습니다..."); break;
+						}
+					}
+		
+	}
+	public void outputData(String col) {
 		System.out.println();
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		PreparedStatement pstmt2 = null; 
-		ResultSet rst = null;
-		ResultSet rst2 = null;
+		ResultSet rs = null;
+		ResultSet rs2 = null;
 		int denum = 1;
 		int size = 0;
 		String num = null;
+		
+		
+		
 		while(true) {
 			
 		try {
 			Class.forName(driver);
 			conn = DriverManager.getConnection(url,"scott","123456");
 			pstmt2 = conn.prepareStatement("select count(*) from BOOK_MEMBER");
-			rst2 = pstmt2.executeQuery();
-			if(rst2.next()) {
-			size = rst2.getInt(1);}
+			rs2 = pstmt2.executeQuery();
+			if(rs2.next()) {
+			size = rs2.getInt(1);}
 
-			pstmt = conn.prepareStatement("Select X.* FROM"
-					+ " (Select ROWNUM rnum, A.ID,A.NAME FROM BOOK_MEMBER A"
-					+ " order by A.NAME asc) X"
-					+ " where rnum between ? and ?+9"
-					+ " order by rnum asc");
+			pstmt = conn.prepareStatement(col);
+			
+			
 			pstmt.setString(1,denum+"");
 			pstmt.setString(2,denum+"");
-			rst = pstmt.executeQuery();
+			
+			rs = pstmt.executeQuery();
 			
 			System.out.println("＃＃＃＃＃＃【회원 목록 출력】＃＃＃＃＃＃");
-			System.out.println("＃［NO］     [ID]      [NAME]    ");
-			while(rst.next()) {
-				int no = rst.getInt(1);
+			System.out.println("＃［NO］     [ID]      [이름]    ");
+			while(rs.next()) {
+				int no = rs.getInt(1);
 				if(no<10)  num = "0"+no;
 				else num = no+"";
-				id = rst.getString(2);
-				name = rst.getString(3);
+				id = rs.getString(2);
+				name = rs.getString(3);
 				System.out.printf("# [%s] %6s  %6s\n",num,id,name);	
 			}
-			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
-			System.out.println("＃ ◀[1] & [2]▶           　＃[EXIT]＃");
+			
+			System.out.println("＃＃＃＃＃＃◀[1]&[2]▶＃＃＃＃[EXIT]");
 			System.out.print("＃ ");
 			select = sc.next();
 			switch(select) {
@@ -114,7 +146,7 @@ public class Member_management {
 								System.out.println();
 								System.out.println("＃ 데이터가 비어있습니다..");
 						}
-								break;
+								break;	
 			case "EXIT" : return;
 			case "exit" : return;
 			default : System.out.println("＃ 다시 입력해주세요...");
@@ -134,8 +166,8 @@ public class Member_management {
 		}catch(Exception e) {
 		}
 		try {
-			if(rst != null) rst.close();
-			if(rst2 != null) rst2.close();
+			if(rs != null) rs.close();
+			if(rs2 != null) rs2.close();
 		}catch(Exception e) {
 		}
 			
@@ -148,7 +180,7 @@ public class Member_management {
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		ResultSet rst = null;
+		ResultSet rs = null;
 		
 		try {
 			System.out.print("＃ ID 입력 : ");
@@ -158,16 +190,16 @@ public class Member_management {
 			conn = DriverManager.getConnection(url,"scott","123456");
 			pstmt = conn.prepareStatement("Select * From BOOK_MEMBER Where ID = ?");
 			pstmt.setString(1, id);
-			rst = pstmt.executeQuery();
+			rs = pstmt.executeQuery();
 			System.out.println("＃＃＃＃＃＃【회원 목록 출력】＃＃＃＃＃＃");
 			
-			while(rst.next()) {
-				id = rst.getString(1);
-				mb_date = rst.getString(2);
-				name = rst.getString(3);
-				phone = rst.getString(4);
-				email = rst.getString(5);
-				addr = rst.getString(6);
+			while(rs.next()) {
+				id = rs.getString(1);
+				mb_date = rs.getString(2);
+				name = rs.getString(3);
+				phone = rs.getString(4);
+				email = rs.getString(5);
+				addr = rs.getString(6);
 				
 				System.out.println("# [I　   D]▶ " +id);
 				System.out.println("# [가입일]▶ " +mb_date);
@@ -192,7 +224,7 @@ public class Member_management {
 		}catch(Exception e) {
 		}
 		try {
-			if(rst != null) rst.close();
+			if(rs != null) rs.close();
 		}catch(Exception e) {
 		}
 			
@@ -205,7 +237,7 @@ public class Member_management {
 		try {
 			System.out.println();
 			System.out.println("＃＃＃＃＃＃【회원 정보 수정】＃＃＃＃＃＃");
-			System.out.print("# [I　   D]▶  ");
+			System.out.print("# [수정할 회원의 ID]▶  ");
 			id = sc.next();
 			System.out.print("# [폰번호]▶ ");//1.폰번호 양식알고리즘 작성
 			phone = sc.next();

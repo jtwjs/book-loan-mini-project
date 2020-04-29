@@ -26,7 +26,7 @@ public class Main {
 	}
 	
 	public static void member_info() {
-		Member_management mem = new Member_management();
+		Member_manage mem = new Member_manage();
 		
 		while(true) {
 			System.out.println();
@@ -40,9 +40,9 @@ public class Main {
 			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
 			System.out.print("＃ 메뉴 선택 ▶ ");
 			select = sc.nextInt();
-			switch(select) {
+			switch(select) {	
 				case 1:mem.inputData(); break;
-				case 2:mem.outputData(); break;
+				case 2:mem.outputOrder(); break;
 				case 3:mem.searchData(); break;
 				case 4:mem.updateData(); break;
 				case 5:mem.deleteData(); break;
@@ -53,8 +53,9 @@ public class Main {
 		}
 	
 	public static void book_info() {
-		System.out.println();
+		Book_manage book = new Book_manage();
 		while(true) {
+			System.out.println();
 			System.out.println("＃＃＃＃＃＃【도서 정보 관리】＃＃＃＃＃＃");
 			System.out.println("＃　　 　　[1]도서 정보 입력 　　　     ＃");
 			System.out.println("＃　　 　　[2]도서 정보 출력　  　　　   ＃");
@@ -66,11 +67,11 @@ public class Main {
 			System.out.print("＃ 메뉴 선택 ▶ ");
 			select = sc.nextInt();
 			switch(select) {
-				case 1:
-				case 2:
-				case 3:
-				case 4:
-				case 5:
+				case 1: book.inputData(); break;
+				case 2: book.outputOrder();break;
+				case 3: book.searchOrder(); break;
+				case 4: book.updateData(); break;
+				case 5: book.deleteData(); break;
 				case 6: return;
 				default:  System.out.println("# 잘못 입력하셨습니다..."); break;
 						}

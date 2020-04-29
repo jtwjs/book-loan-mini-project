@@ -1,7 +1,7 @@
 -- 회원테이블
 CREATE TABLE BOOK_MEMBER(
     ID varchar2(15),
-    membership_date date,
+    membership_date date ,
     name varchar2(8) not null,
     phone char(13) not null,
     email varchar2(20),
@@ -10,12 +10,13 @@ CREATE TABLE BOOK_MEMBER(
 desc book_member;
 -- 도서테이블
 
+
 CREATE TABLE BOOK_INFO(
     ISBN varchar2(13),
     title varchar2(20) not null,
     Author varchar2(20) not null,
     publisher varchar2(20) not null,
-    publication_date number not null,
+    publication_date date not null,
     location varchar2(20),
     claim_symbol varchar2(20),
     Inventory_quantity number default 0,
