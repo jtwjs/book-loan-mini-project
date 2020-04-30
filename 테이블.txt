@@ -11,7 +11,7 @@
 *대출테이블
 속성
 1. ID
-2. ISBN
+2. 청구기호
 3. 빌린 도서제목
 4. 빌린날짜
 5. 반납기한
@@ -66,3 +66,43 @@ select* from (
 where rnum>=?;
 
 select *
+
+
+--dml 혹시몰라
+
+
+-- BOOK_BORROW.LORN_PERIOD(반납기한)자동계산 트리거 -> 자바에서 설정하는걸로~ 
+
+--CREATE OR REPLACE TRIGGER LORN_TRIGGER
+--AFTER INSERT ON BOOK_BORROW 
+--WHEN 
+
+-- 도서 대출시 재고수량 변경 
+
+
+-- BOOK_BORROW.LORN_PERIOD(반납기한)자동계산 트리거 -> 자바에서 설정하는걸로~ 
+
+--CREATE OR REPLACE TRIGGER LORN_TRIGGER
+--AFTER INSERT ON BOOK_BORROW 
+--WHEN 
+
+-- 도서 대출시 재고수량 변경 
+CREATE OR REPLACE TRIGGER BORROW_TRIGGER
+after insert on book_borrow
+for each row
+begin
+    update book_info
+    set inventory_quantity = inventory_quantity - 1
+    where claim_symbol = :new.claim_symbol;
+end;
+/
+
+CREATE OR REPLACE TRIGGER return_TRIGGER
+after insert on book_borrow
+for each row
+begin
+    update book_info
+    set inventory_quantity = inventory_quantity + 1
+    where claim_symbol = :new.claim_symbol;
+end;
+/

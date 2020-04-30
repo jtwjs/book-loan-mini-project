@@ -1,22 +1,23 @@
-import java.sql.Connection;	
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.Scanner;
 
 public class Book_manage {
-	Scanner sc = new Scanner(System.in);
+	static Scanner sc = new Scanner(System.in);
 	private String claim,title,author,pub,pub_date,loc,stock;
-	static public String driver = "oracle.jdbc.driver.OracleDriver";
-	static public String url = "jdbc:oracle:thin:@127.0.0.1:1521:orcl";
+	final static public String driver = "oracle.jdbc.driver.OracleDriver";
+	final static public String url = "jdbc:oracle:thin:@127.0.0.1:1521:orcl";
 	static public String select=null;
-	
+	static String str = null;
 	
 	public void inputData()  {
-		System.out.println();
+		
 		System.out.println("＃＃＃＃＃＃【도서 정보 입력】＃＃＃＃＃＃");
 		System.out.print("# [청구기호]▶ ");
 		claim = sc.next();
@@ -77,6 +78,8 @@ public class Book_manage {
 	
 	public boolean date_format(String date) {  //날짜 포맷 확인 몌쏘드
 		Calendar time = new GregorianCalendar(Locale.KOREA);
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd");
 		int realYear = time.get(Calendar.YEAR);
 		int realMonth = time.get(Calendar.MONTH);
 		int realDay = time.get(Calendar.DATE);
@@ -86,6 +89,10 @@ public class Book_manage {
 		int int_yyyy = Integer.parseInt(yyyy);
 		int int_mm = Integer.parseInt(mm);
 		int int_dd = Integer.parseInt(dd);
+		cal.set(Calendar.YEAR, int_yyyy);
+		cal.set(Calendar.MONTH,int_mm-1);
+		cal.set(Calendar.DATE,int_dd);
+		
 		
 		if(date.length() != 8) {
 			System.out.println("# 날짜 형식이 잘못 입력 되엇습니다..(ex:19950307)");
@@ -98,14 +105,15 @@ public class Book_manage {
 			System.out.println("# 날짜 형식이 잘못 입력 되엇습니다..(ex:19950307)");
 			return false;
 		}
-		pub_date = yyyy+"-"+mm+"-"+dd;
+//		
+		pub_date = fm.format(cal.getTime());
 		return true ;
 	}
 	
 	//도서 출력
 	public void outputOrder(){
 		while(true) {
-			System.out.println();
+			
 			System.out.println("＃＃＃＃＃＃【도서 목록 검색】＃＃＃＃＃＃");
 			System.out.println("＃　　　 　　[1]책이름 오름차순   　　  ＃");
 			System.out.println("＃　　　 　　[2]주제별로 검색　    　　　＃");
@@ -122,7 +130,7 @@ public class Book_manage {
 						+ " FROM BOOK_INFO"
 						+ " order by title asc) A"
 						+ " where ROWNUM <= ?+9)"
-						+ " where rnum >= ?"); break;
+						+ " where rnum >= ?");str = "책이름 오름차순"; break;
 				case 2: menu_subject(); break;
 				case 3: menu_loc();  break;
 				case 4: outputData("Select * FROM"
@@ -131,7 +139,7 @@ public class Book_manage {
 						+ " FROM BOOK_INFO"
 						+ " order by inventory_quantity desc) A"
 						+ " where ROWNUM <= ?+9)"
-						+ " where rnum >= ?"); break;
+						+ " where rnum >= ?"); str = "재고 내림차순"; break;
 				case 5: return;
 				default:  System.out.println("# 잘못 입력하셨습니다..."); break;
 						}
@@ -139,7 +147,7 @@ public class Book_manage {
 		
 	}
 	public void outputData(String col) {
-		System.out.println();
+		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		PreparedStatement pstmt2 = null; 
@@ -160,7 +168,9 @@ public class Book_manage {
 			rs2 = pstmt2.executeQuery();
 			if(rs2.next()) {
 			size = rs2.getInt(1);}
-
+			System.out.println("#");
+			System.out.println("#'"+str+"'에 대한 자료검색 결과이며, 총 "+size+"건이 검색되었습니다.");
+			System.out.println("#");
 			pstmt = conn.prepareStatement(col);
 			
 			
@@ -187,14 +197,14 @@ public class Book_manage {
 			select = sc.next();
 			switch(select) {
 			case "1" : if(denum==1) {
-						System.out.println();
+						
 						System.out.println("＃ 데이터가 비어있습니다..");
 
 							} 
 						else denum-=10; break;
 			case "2" : if(denum+9<size) denum+=10; 
 						else { 
-								System.out.println();
+								
 								System.out.println("＃ 데이터가 비어있습니다..");
 						}
 								break;
@@ -237,7 +247,7 @@ public class Book_manage {
 	
 public void menu_subject() {
 	while(true) {
-		System.out.println();
+		
 		System.out.println("＃＃＃＃＃＃＃＃＃【주제별 도서 목록】＃＃＃＃＃＃＃＃");
 		System.out.println("＃　　　 　　[0] 총　류 〔000 ~ 090〕　　  　  　＃");
 		System.out.println("＃　　　 　　[1] 철　학 〔100 ~ 190〕　　  　  　＃");
@@ -261,7 +271,7 @@ public void menu_subject() {
 					+ " where claim_symbol LIKE '0%'"
 					+ " order by title asc) A"
 					+ " where ROWNUM <= ?+9)"
-					+ " where rnum >= ?"); break;
+					+ " where rnum >= ?");  str = "총류 도서";break;
 			case 1: outputData("Select * FROM"
 					+ " (Select ROWNUM rnum, A.* FROM"
 					+ " (Select title,publisher,location,inventory_quantity"
@@ -269,7 +279,7 @@ public void menu_subject() {
 					+ " where claim_symbol LIKE '1%'"
 					+ " order by title asc) A"
 					+ " where ROWNUM <= ?+9)"
-					+ " where rnum >= ?"); break;
+					+ " where rnum >= ?");str = "철학 도서"; break;
 			case 2:  outputData("Select * FROM"
 					+ " (Select ROWNUM rnum, A.* FROM"
 					+ " (Select title,publisher,location,inventory_quantity"
@@ -277,7 +287,7 @@ public void menu_subject() {
 					+ " where claim_symbol LIKE '2%'"
 					+ " order by title asc) A"
 					+ " where ROWNUM <= ?+9)"
-					+ " where rnum >= ?"); break;
+					+ " where rnum >= ?"); str = "종교 도서";break;
 			case 3:  outputData("Select * FROM"
 					+ " (Select ROWNUM rnum, A.* FROM"
 					+ " (Select title,publisher,location,inventory_quantity"
@@ -285,7 +295,7 @@ public void menu_subject() {
 					+ " where claim_symbol LIKE '3%'"
 					+ " order by title asc) A"
 					+ " where ROWNUM <= ?+9)"
-					+ " where rnum >= ?"); break;
+					+ " where rnum >= ?"); str = "사회과학 도서";break;
 			case 4:  outputData("Select * FROM"
 					+ " (Select ROWNUM rnum, A.* FROM"
 					+ " (Select title,publisher,location,inventory_quantity"
@@ -293,7 +303,7 @@ public void menu_subject() {
 					+ " where claim_symbol LIKE '4%'"
 					+ " order by title asc) A"
 					+ " where ROWNUM <= ?+9)"
-					+ " where rnum >= ?"); break;
+					+ " where rnum >= ?"); str = "순수기술 도서";break;
 			case 5:  outputData("Select * FROM"
 					+ " (Select ROWNUM rnum, A.* FROM"
 					+ " (Select title,publisher,location,inventory_quantity"
@@ -301,7 +311,7 @@ public void menu_subject() {
 					+ " where claim_symbol LIKE '5%'"
 					+ " order by title asc) A"
 					+ " where ROWNUM <= ?+9)"
-					+ " where rnum >= ?"); break;
+					+ " where rnum >= ?"); str = "기술과학 도서";break;
 			case 6:  outputData("Select * FROM"
 					+ " (Select ROWNUM rnum, A.* FROM"
 					+ " (Select title,publisher,location,inventory_quantity"
@@ -309,7 +319,7 @@ public void menu_subject() {
 					+ " where claim_symbol LIKE '6%'"
 					+ " order by title asc) A"
 					+ " where ROWNUM <= ?+9)"
-					+ " where rnum >= ?"); break;
+					+ " where rnum >= ?"); str = "예술 도서";break;
 			case 7:  outputData("Select * FROM"
 					+ " (Select ROWNUM rnum, A.* FROM"
 					+ " (Select title,publisher,location,inventory_quantity"
@@ -317,7 +327,7 @@ public void menu_subject() {
 					+ " where claim_symbol LIKE '7%'"
 					+ " order by title asc) A"
 					+ " where ROWNUM <= ?+9)"
-					+ " where rnum >= ?"); break;
+					+ " where rnum >= ?"); str = "언어 도서";break;
 			case 8:  outputData("Select * FROM"
 					+ " (Select ROWNUM rnum, A.* FROM"
 					+ " (Select title,publisher,location,inventory_quantity"
@@ -325,7 +335,7 @@ public void menu_subject() {
 					+ " where claim_symbol LIKE '8%'"
 					+ " order by title asc) A"
 					+ " where ROWNUM <= ?+9)"
-					+ " where rnum >= ?"); break;
+					+ " where rnum >= ?"); str = "문학 도서";break;
 			case 9:  outputData("Select * FROM"
 					+ " (Select ROWNUM rnum, A.* FROM"
 					+ " (Select title,publisher,location,inventory_quantity"
@@ -333,7 +343,7 @@ public void menu_subject() {
 					+ " where claim_symbol LIKE '9%'"
 					+ " order by title asc) A"
 					+ " where ROWNUM <= ?+9)"
-					+ " where rnum >= ?"); break;
+					+ " where rnum >= ?"); str = "역사 도서";break;
 			case 10: return;
 			default:  System.out.println("# 잘못 입력하셨습니다..."); break;
 					}
@@ -341,7 +351,7 @@ public void menu_subject() {
 }
 public void menu_loc() {
 	while(true) {
-		System.out.println();
+		
 		System.out.println("＃＃＃＃＃＃【위치별 도서 목록】＃＃＃＃＃");
 		System.out.println("＃　　　 　　[1]제1 자료실　　　     　　＃");
 		System.out.println("＃　　　 　　[2]제2 자료실　    　　　 　＃");
@@ -358,7 +368,7 @@ public void menu_loc() {
 					+ " where location = '제1자료실'"
 					+ " order by title asc) A"
 					+ " where ROWNUM <= ?+9)"
-					+ " where rnum >= ?"); break;
+					+ " where rnum >= ?"); str = "제1자료실 도서";break;
 			case 2: outputData("Select * FROM"
 					+ " (Select ROWNUM rnum, A.* FROM"
 					+ " (Select title,publisher,location,inventory_quantity"
@@ -366,7 +376,7 @@ public void menu_loc() {
 					+ " where location = '제2자료실'"
 					+ " order by title asc) A"
 					+ " where ROWNUM <= ?+9)"
-					+ " where rnum >= ?"); break;
+					+ " where rnum >= ?");str = "제2자료실 도서"; break;
 			case 3: outputData("Select * FROM"
 					+ " (Select ROWNUM rnum, A.* FROM"
 					+ " (Select title,publisher,location,inventory_quantity"
@@ -374,7 +384,7 @@ public void menu_loc() {
 					+ " where location = '제3자료실'"
 					+ " order by title asc) A"
 					+ " where ROWNUM <= ?+9)"
-					+ " where rnum >= ?"); break;
+					+ " where rnum >= ?"); str = "제3자료실 도서";break;
 			case 4: return;
 			default:  System.out.println("# 잘못 입력하셨습니다..."); break;
 					}
@@ -382,84 +392,100 @@ public void menu_loc() {
 }
 	public void searchOrder() {
 		while(true) {
-			System.out.println();
+			
 			System.out.println("＃＃＃＃＃＃【도서 목록 검색】＃＃＃＃＃＃");
-			System.out.println("＃　　　 　　[1]책 제목으로 검색  　　  ＃");
-			System.out.println("＃　　　 　　[2]저자로 검색 　　　　 　＃");
+			System.out.println("＃　　　 　　[1]모든 도서 검색  　　  ＃");
+			System.out.println("＃　　　 　　[2]책 제목으로 검색  　　  ＃");
 			System.out.println("＃　　　 　　[3]상위 메뉴   　　　　　  ＃");
 			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
 			System.out.print("＃ 메뉴 선택 ▶ ");
 			int select = sc.nextInt(); //지역변수 select
 			switch(select) {
-				case 1: searchData("Select * From BOOK_INFO Where title = ?",1); break;
-				case 2: searchData("Select * From BOOK_INFO Where author = ?",2); break;
+			case 1: outputOrder();break;
+				case 2: searchData("Select * FROM"
+						+ " (Select ROWNUM rnum, A.* FROM"
+						+ " (Select * FROM BOOK_INFO"
+						+ " where title = ?"
+						+ " order by title asc) A)"
+						+ " where rnum = ?"); break;
 				case 3: return;
 				default:  System.out.println("# 잘못 입력하셨습니다..."); break;
 						}
 					}
 	}
 
-	public void searchData(String col,int search) {
+	public void searchData(String col) {
 
 			Connection conn = null;
 			PreparedStatement pstmt = null;
+			PreparedStatement pstmt2 = null;
 			ResultSet rs = null;
-			
+			ResultSet rs2 = null;
+			int denum = 1;
+			int size = 0;
+			System.out.print("＃ 책 제목 입력 : ");
+			title = sc.next();
+			while(true) {
 			try {
 				Class.forName(driver);
 				conn = DriverManager.getConnection(url,"scott","123456");
 				pstmt = conn.prepareStatement(col);
-				if(search == 1) {
-					System.out.print("＃ 책 제목 입력 : ");
-					title = sc.next();
+	
+					
+					pstmt2 = conn.prepareStatement("select count(*) from Book_info where title = ?");
 					pstmt.setString(1, title);
-				}
-				else if(search == 2) {
-					System.out.print("# 저자 입력 : ");
-					author = sc.next();
-					pstmt.setString(1, author);
-				}
+					pstmt.setString(2, denum+"");
+					pstmt2.setString(1,title);
+			
+				
+				rs2 = pstmt2.executeQuery();
 				rs = pstmt.executeQuery();
 				
-				rs.next();
-					while(true) {
-						System.out.println();
+				if(rs2.next()) {
+					size = rs2.getInt(1);}
+				System.out.println("#");
+				System.out.println("#책제목 '"+title+"'에 대한 자료검색 결과이며, 총 "+size+"건이 검색되었습니다.");
+				System.out.println("#");
+					while(rs.next()) {
 						System.out.println("＃＃＃＃＃＃【도서 상세 조회】＃＃＃＃＃＃");
-						claim = rs.getString(1);
-						title = rs.getString(2);
-						author = rs.getString(3);
-						pub= rs.getString(4);
-						pub_date = rs.getString(5);
-						loc= rs.getString(6);
-						stock= rs.getString(7);
+						claim = rs.getString(2);
+						title = rs.getString(3);
+						author = rs.getString(4);
+						pub= rs.getString(5);
+						pub_date = rs.getString(6);
+						loc= rs.getString(7);
+						stock= rs.getString(8);
 						System.out.println("# [청구기호]▶ " +claim);
 						System.out.println("# [책  제목 ]▶ " +title);
 						System.out.println("# [ 저  자  ]▶ " +author);
 						System.out.println("# [출 판 사 ]▶ " +pub);
-						System.out.println("# [출 간 일 ]▶ " +pub_date);
+						System.out.println("# [출 간 일 ]▶ " +pub_date.substring(0,10));
 						System.out.println("# [ 위  치  ]▶ " +loc);
 						System.out.println("# [ 재  고  ]▶ " +stock);
+					}
 						System.out.println("＃＃＃＃＃＃◀[1]&[2]▶＃＃＃＃[EXIT]");
 						System.out.print("＃ ");
 						select = sc.next();
 						switch(select) {
-						case "1": if(rs.previous()==false) {
-							
-										System.out.println();
-										System.out.println("＃ 데이터가 비어있습니다.."); 
-										//질문  //rownum 써서 페이지만들기로
-									} break;
-						case "2": if(rs.next()==false) {
-										System.out.println();
-										System.out.println("＃ 데이터가 비어있습니다..");
-									} break;			
-						case "EXIT" : 
+						case "1" : if(denum==1) {
+									System.out.println();
+									System.out.println("＃ 데이터가 비어있습니다..");
+										} 
+									else denum-=1; break;
+						case "2" : if(denum<size) denum++; 
+									else { 
+											System.out.println();
+											System.out.println("＃ 데이터가 비어있습니다..");
+									}
+											break;	
+						case "EXIT" :
 						case "exit" : return;
 						default : System.out.println("＃ 다시 입력해주세요...");
-					}
-				}
-
+						}
+			
 				
+			
+					
 			}catch(Exception e) {System.out.println("＃ DB 연결에 실패했습니다...");
 			System.out.println("＃ Error - "+e.getMessage());
 			
@@ -470,12 +496,15 @@ public void menu_loc() {
 			}
 			try {
 				if(pstmt != null) pstmt.close();
+				if(pstmt2 != null) pstmt2.close();
 			}catch(Exception e) {
 			}
 			try {
 				if(rs != null) rs.close();
+				if(rs2 != null)rs2.close();
 			}catch(Exception e) {
 			}	
+			}
 			}
 	}
 	public void updateData() {
@@ -483,7 +512,7 @@ public void menu_loc() {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
-			System.out.println();
+			
 			System.out.println("＃＃＃＃＃＃【도서 정보 수정】＃＃＃＃＃＃");
 			System.out.print("# [수정할 도서의 청구기호]▶  ");
 			claim = sc.next();
@@ -557,5 +586,367 @@ public void menu_loc() {
 		}
 		
 	}
+	public void application(String account) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		System.out.println("＃＃＃＃＃＃【신청 도서 정보 입력】＃＃＃＃＃＃");
+		System.out.print("# [도 서 명]▶ ");
+		title = sc.next();
+		System.out.print("# [출 판 사]▶ ");
+		pub = sc.next();
+		
+		try {	
+			Class.forName(driver);
+			conn = DriverManager.getConnection(url,"scott","123456");
+			pstmt = conn.prepareStatement("Insert into book_application(id,book_title,publisher)"
+					+ " values( ?,?,?)");
+			pstmt.setString(1, account);
+			pstmt.setString(2, title);
+			pstmt.setString(3, pub);
+			
+			int n = pstmt.executeUpdate();
+			if(n==1)
+				System.out.println("＃ 도서 신청이 완료되었습니다... ");
+		}catch(Exception e) {System.out.println("＃ DB 연결에 실패했습니다...");
+		System.out.println("＃ Error - "+e.getMessage());
+		
+	}finally {
+		try {
+			if(conn != null) conn.close();
+		}catch(Exception e) {
+		}
+		try {
+			if(pstmt != null) pstmt.close();
+		}catch(Exception e) {
+		}
+			
+		}
+	}
+	public static void application_list(String account) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			
+			Class.forName(driver);
+			conn = DriverManager.getConnection(url,"scott","123456");
+			pstmt = conn.prepareStatement("Select * FROM"
+					+ " (Select ROWNUM rnum, A.* FROM"
+					+ " (Select book_title, publisher, application_date, application_state"
+					+ " FROM BOOK_application"
+					+ " where id = ?"
+					+ " order by application_date asc) A"
+					+ ")"
+					);//에러나면확인해
+			
+			pstmt.setString(1,account);
+			rs = pstmt.executeQuery();
+			System.out.println("＃＃＃＃＃＃＃＃＃【도서 신청 목록】＃＃＃＃＃＃＃＃＃");
+			System.out.println("＃［NO］     [책이름]  [출판사]  [신청날짜]  [진행상태]");
+			while(rs.next()) {
+				String no = rs.getString(1);
+				String title = rs.getString(2);
+				String pub = rs.getString(3);
+				String app_date = rs.getString(4);
+				String app_state = rs.getString(5);
+				System.out.printf("# [%s] %6s  %6s %6s %6s\n",no,title,pub,app_date.substring(0,10),app_state);
+				
+			}
+			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
+			System.out.print("# ◀ 뒤로가려면 아무키나 입력하시오 ");
+			select = sc.next();
+			switch(select) {
+			default : return;
+			}
+
+			
+		}catch(Exception e) {
+			System.out.println("＃ DB 연결에 실패했습니다...");
+			System.out.println("＃ Error - "+e.getMessage());
+		}finally {
+			try {
+				if(conn != null) conn.close();
+			}catch(Exception e) {
+			}
+			try {
+				if(pstmt != null) pstmt.close();
+			}catch(Exception e) {
+			}
+			try {
+				if(rs != null) rs.close();
+			}catch(Exception e) {
+				
+			}
+		}	
+	}
+	
+	public static void application_list() {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		PreparedStatement pstmt2 = null; 
+		ResultSet rs = null;
+		ResultSet rs2 = null;
+		int denum = 1;
+		int size = 0;
+		
+		
+		
+		
+		while(true) {
+			
+		try {
+			Class.forName(driver);
+			conn = DriverManager.getConnection(url,"scott","123456");
+			pstmt2 = conn.prepareStatement("select count(*) from BOOK_application");
+			rs2 = pstmt2.executeQuery();
+			if(rs2.next()) {
+			size = rs2.getInt(1);}
+			System.out.println("#");
+			System.out.println("#'처리대기 도서목록'에 대한 자료검색 결과이며, 총 "+size+"건이 검색되었습니다.");
+			System.out.println("#");
+			pstmt = conn.prepareStatement("Select * FROM"
+					+ " (Select ROWNUM rnum, A.* FROM"
+					+ " (Select id,book_title, publisher, application_date, application_state"
+					+ " FROM BOOK_application"
+					+ " order by application_date asc) A"
+					+ "	where ROWNUM <= ?+9)"
+					+ " where rnum >=?");
+						
+//			"Select * FROM"
+//			+ " (Select ROWNUM rnum, A.* FROM"
+//			+ " (Select title,publisher,location,inventory_quantity"
+//			+ " FROM BOOK_INFO"
+//			+ " order by inventory_quantity desc) A"
+//			+ " where ROWNUM <= ?+9)"
+//			+ " where rnum >= ?");
+			
+			
+			pstmt.setString(1,denum+"");
+			pstmt.setString(2,denum+"");
+			
+			rs = pstmt.executeQuery();
+			
+			System.out.println("＃＃＃＃＃＃＃＃＃【도서 신청 목록】＃＃＃＃＃＃＃＃＃");
+			System.out.println("＃［NO］ [ID]    [책이름]  [출판사]  [신청날짜]  [진행상태]");
+			while(rs.next()) {
+				String no = rs.getString(1);
+				String id = rs.getString(2);
+				String title = rs.getString(3);
+				String pub = rs.getString(4);
+				String app_date = rs.getString(5);
+				String app_state = rs.getString(6);
+				System.out.printf("# [%s] %6s %6s %6s %6s %6s\n",no,id,title,pub,app_date.substring(0,10),app_state);
+			}
+			
+			System.out.println("＃＃＃＃＃＃＃＃＃＃◀[1]&[2]▶＃＃＃＃＃＃[EXIT]");
+			System.out.print("＃ ");
+			select = sc.next();
+			switch(select) {
+			case "1" : if(denum==1) {
+						
+						System.out.println("＃ 데이터가 비어있습니다..");
+
+							} 
+						else denum-=10; break;
+			case "2" : if(denum+9<size) denum+=10; 
+						else { 
+								
+								System.out.println("＃ 데이터가 비어있습니다..");
+						}
+								break;
+			case "EXIT" : return;
+			case "exit" : return;
+			default : System.out.println("＃ 다시 입력해주세요...");
+			}
+			
+		}catch(Exception e) {System.out.println("＃ DB 연결에 실패했습니다...");
+		System.out.println("＃ Error - "+e.getMessage());
+		return;
+	}finally {
+		try {
+			if(conn != null) conn.close();
+		}catch(Exception e) {
+		}
+		try {
+			if(pstmt != null) pstmt.close();
+			if(pstmt2 != null) pstmt2.close();
+		}catch(Exception e) {
+		}
+		try {
+			if(rs != null) rs.close();
+			if(rs2 != null) rs2.close();
+		}catch(Exception e) {
+		}
+			
+		}
+		
+	}//while문	
 
 	}
+	
+	public static void tot_application_list(String account) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			
+			Class.forName(driver);
+			conn = DriverManager.getConnection(url,"scott","123456");
+			pstmt = conn.prepareStatement("Select * FROM"
+					+ " (Select ROWNUM rnum, A.* FROM"
+					+ " (Select book_title,publisher,application_date,application_state"
+					+ " FROM backup_application"
+					+ " where id= ?"
+					+ " order by no asc) A"
+					+ ")"
+					);//에러나면확인해
+			
+			pstmt.setString(1,account);
+			rs = pstmt.executeQuery();
+			System.out.println("＃＃＃＃＃＃＃＃＃【신청 이력 출력】＃＃＃＃＃＃＃＃＃");
+			System.out.println("＃［NO］     [책이름]  [출판사]  [접수날짜]  [접수상태]");
+			while(rs.next()) {
+				String no = rs.getString(1);
+				String title = rs.getString(2);
+				String pub = rs.getString(3);
+				String app_date = rs.getString(4);
+				String app_state = rs.getString(5);
+				System.out.printf("# [%s] %6s  %6s %8s %8s\n",no,title,pub,app_date.substring(0,10),app_state);
+			
+			}
+			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
+			System.out.print("# ◀ 뒤로가려면 아무키나 입력하시오 ");
+			select = sc.next();
+			switch(select) {
+			default : return;
+			}
+
+			
+		}catch(Exception e) {
+			System.out.println("＃ DB 연결에 실패했습니다...");
+			System.out.println("＃ Error - "+e.getMessage());
+		}finally {
+			try {
+				if(conn != null) conn.close();
+			}catch(Exception e) {
+			}
+			try {
+				if(pstmt != null) pstmt.close();
+			}catch(Exception e) {
+			}
+			try {
+				if(rs != null) rs.close();
+			}catch(Exception e) {
+				
+			}
+		}
+		
+	}
+
+	public static void tot_application_list() {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		PreparedStatement pstmt2 = null; 
+		ResultSet rs = null;
+		ResultSet rs2 = null;
+		int denum = 1;
+		int size = 0;
+		
+		
+		
+		
+		while(true) {
+			
+		try {
+			Class.forName(driver);
+			conn = DriverManager.getConnection(url,"scott","123456");
+			pstmt2 = conn.prepareStatement("select count(*) from backup_application");
+			rs2 = pstmt2.executeQuery();
+			if(rs2.next()) {
+			size = rs2.getInt(1);}
+			System.out.println("#");
+			System.out.println("#'처리완료'된 신청도서에 대한 자료검색 결과이며, 총 "+size+"건이 검색되었습니다.");
+			System.out.println("#");
+			pstmt = conn.prepareStatement("Select * FROM"
+					+ " (Select ROWNUM rnum, A.* FROM"
+					+ " (Select id,book_title, publisher, application_date, application_state"
+					+ " FROM backup_application"
+					+ " order by application_date asc) A"
+					+ "	where ROWNUM <= ?+9)"
+					+ " where rnum >=?");
+						
+				//			"Select * FROM"
+				//+ " (Select ROWNUM rnum, A.* FROM"
+				//+ " (Select book_title,publisher,application_date,application_state"
+				//+ " FROM backup_application"
+				//+ " where id= ?"
+				//+ " order by no asc) A"
+				//+ ")"
+				//);
+			
+			pstmt.setString(1,denum+"");
+			pstmt.setString(2,denum+"");
+			
+			rs = pstmt.executeQuery();
+			
+			System.out.println("＃＃＃＃＃＃＃＃＃【신청 이력 출력】＃＃＃＃＃＃＃＃＃");
+			System.out.println("＃［NO］ [id]   [책이름]  [출판사]  [접수날짜]  [접수상태]");
+			while(rs.next()) {
+				String no = rs.getString(1);
+				String id = rs.getString(2);
+				String title = rs.getString(3);
+				String pub = rs.getString(4);
+				String app_date = rs.getString(5);
+				String app_state = rs.getString(6);
+				System.out.printf("# [%s] %6s %6s %6s %8s %8s\n",no,id,title,pub,app_date.substring(0,10),app_state);
+			
+			}
+			
+			System.out.println("＃＃＃＃＃＃＃＃＃＃◀[1]&[2]▶＃＃＃＃＃＃[EXIT]");
+			System.out.print("＃ ");
+			select = sc.next();
+			switch(select) {
+			case "1" : if(denum==1) {
+						
+						System.out.println("＃ 데이터가 비어있습니다..");
+
+							} 
+						else denum-=10; break;
+			case "2" : if(denum+9<size) denum+=10; 
+						else { 
+								
+								System.out.println("＃ 데이터가 비어있습니다..");
+						}
+								break;
+			case "EXIT" : return;
+			case "exit" : return;
+			default : System.out.println("＃ 다시 입력해주세요...");
+			}
+			
+		}catch(Exception e) {System.out.println("＃ DB 연결에 실패했습니다...");
+		System.out.println("＃ Error - "+e.getMessage());
+		return;
+	}finally {
+		try {
+			if(conn != null) conn.close();
+		}catch(Exception e) {
+		}
+		try {
+			if(pstmt != null) pstmt.close();
+			if(pstmt2 != null) pstmt2.close();
+		}catch(Exception e) {
+		}
+		try {
+			if(rs != null) rs.close();
+			if(rs2 != null) rs2.close();
+		}catch(Exception e) {
+		}
+			
+		}
+		
+	}//while문	
+
+	}
+	
+
+}
