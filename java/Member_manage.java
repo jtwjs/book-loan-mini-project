@@ -67,24 +67,28 @@ public class Member_manage {
 			System.out.println("＃＃＃＃＃＃【회원 목록 검색】＃＃＃＃＃＃");
 			System.out.println("＃　　　 　　[1]ID 오름차순 　  　　　＃");
 			System.out.println("＃　　　 　　[2]이름 오름차순　    　　　＃");
-			System.out.println("＃　　　 　　[3]상세 검색　    　　　＃");
-			System.out.println("＃　　　 　　[4]상위 메뉴   　　　　　  ＃");
+			System.out.println("＃　　　 　　[3]상세 검색　    　        　　＃");
+			System.out.println("＃　　　 　　[4]상위 메뉴   　　 　　　  ＃");
 			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
 			System.out.print("＃ 메뉴 선택 ▶ ");
 			int select = sc.nextInt(); //지역변수 select
 			switch(select) {
-				case 1: outputData("Select * FROM"
+				case 1: 
+						str="ID 오름차순";
+						outputData("Select * FROM"
 						+ " (Select ROWNUM rnum, A.* FROM"
 						+ " (Select ID,NAME FROM BOOK_MEMBER"
 						+ " order by id asc) A"
 						+ " where ROWNUM <= ?+9)"
-						+ " where rnum >= ?"); str="ID 오름차순"; break;
-				case 2: outputData("Select * FROM"
+						+ " where rnum >= ?");  break;
+				case 2: 
+						str="이름 오름차순";
+						outputData("Select * FROM"
 						+ " (Select ROWNUM rnum, A.* FROM"
 						+ " (Select ID,NAME FROM BOOK_MEMBER"
 						+ " order by name asc) A"
 						+ " where ROWNUM <= ?+9)"
-						+ " where rnum >= ?");str="이름 오름차순"; break;
+						+ " where rnum >= ?"); break;
 				case 3: search_menu(); break;
 				case 4: return;
 				default:  System.out.println("# 잘못 입력하셨습니다..."); break;
@@ -97,12 +101,12 @@ public class Member_manage {
 		
 		while(true) {
 			System.out.println("＃＃＃＃＃＃＃【상세  검색】＃＃＃＃＃＃＃");
-			System.out.println("＃　　　　 　[1]ID 검색　　　　　　　＃");
+			System.out.println("＃　　　　 　[1]ID 검색　　　　　　　 ＃");
 			System.out.println("＃　　　　 　[2]이름 검색　　　　　　　＃");
-			System.out.println("＃　　　　 　[3]폰번호 검색　　　　　　　＃");
-			System.out.println("＃　　　　 　[4]이메일 검색　　　　　　　＃");
+			System.out.println("＃　　　　 　[3]폰번호 검색　　　　　　＃");
+			System.out.println("＃　　　　 　[4]이메일 검색　　　　　　＃");
 			System.out.println("＃　　 　　　[5]주소 검색　　　　　　　＃");
-			System.out.println("＃　　　　 　[6]상위메뉴 　　　　 　   　＃");
+			System.out.println("＃　　　　 　[6]상위메뉴 　　　　 　    ＃");
 			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
 			System.out.print("＃ 메뉴 선택 ▶ ");
 			int select = sc.nextInt();
@@ -464,8 +468,9 @@ public class Member_manage {
 			pstmt = conn.prepareStatement("Delete From BOOK_MEMBER Where ID = ?");
 			pstmt.setString(1, id);
 			int n = pstmt.executeUpdate();
-			if( n==1 )
+			if( n==1 ) {
 				System.out.println("＃ 성공적으로 삭제되었습니다... ");
+				return;}
 			else
 				System.out.println("＃ 입력하신 ID는 없는 ID입니다... ");
 			

@@ -15,11 +15,11 @@ public class Main {
 		Member_manage mem = new Member_manage();
 	while(true) {
 		System.out.println("＃＃＃＃＃＃＃【로그인  메뉴】＃＃＃＃＃＃＃");
-		System.out.println("＃　　　　 　[1]회원 가입　　　　　　　＃");
-		System.out.println("＃　　　　 　[2]로그인　　　　　　　＃");
-		System.out.println("＃　　 　　　[3]관리자로 로그인　　　　　　　＃");
-		System.out.println("＃　　　　 　[4]종  료 　　　　 　   　＃");
-		System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
+		System.out.println("＃　　　　 　[1]회원 가입　　　　　　   　＃");
+		System.out.println("＃　　　　 　[2]로그인　　　　　　        　＃");
+		System.out.println("＃　　 　　　[3]관리자로 로그인　　      　＃");
+		System.out.println("＃　　　　 　[4]종  료 　　　　 　   　    ＃");
+		System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
 		System.out.print("＃ 메뉴 선택 ▶ ");
 		select = sc.nextInt();
 		switch(select) {
@@ -35,7 +35,7 @@ public class Main {
 	}
 	public static void login(int ab) {
 		
-		System.out.println("＃＃＃＃＃＃【로그인】＃＃＃＃＃＃");
+		System.out.println("＃＃＃＃＃＃＃＃【로그인】＃＃＃＃＃＃＃＃＃");
 		if(ab==0) {
 			String sql = "Select count(*) from book_member where id = ?";
 			System.out.print("# [I　   D]▶  ");
@@ -108,12 +108,12 @@ public class Main {
 	public static void main_menu() {
 		
 	while(true) {
-		System.out.println("＃＃＃＃＃＃＃【메인  메뉴】＃＃＃＃＃＃＃");
-		System.out.println("＃　　　　 　[1]내 서재　　　　　　　＃");
-		System.out.println("＃　　　　 　[2]도서 정보　　　　　　　＃");
-//		System.out.println("＃　　 　　　[3]대출 정보　　　　　　　＃");
-		System.out.println("＃　　　　 　[3]로그아웃 　　　　 　   　＃");
-		System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
+		
+		System.out.println("＃＃＃＃＃＃＃＃【메인  메뉴】＃＃＃＃＃＃＃");
+		System.out.println("＃　　　　    　[1]내 서재　　　　　　    　＃");
+		System.out.println("＃　　　 　　　[2]도서 정보　　　　　　　＃");
+		System.out.println("＃　　　　 　　[3]로그아웃 　　　　 　 　＃");
+		System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
 		System.out.print("＃ 메뉴 선택 ▶ ");
 		select = sc.nextInt();
 		switch(select) {
@@ -133,17 +133,17 @@ public class Main {
 		Borrow_manage bor = new Borrow_manage();
 		while(true) {
 			
-			System.out.println("＃＃＃＃＃＃【내 서재】＃＃＃＃＃＃");
+			System.out.println("＃＃＃＃＃＃＃＃【내 서재】＃＃＃＃＃＃＃＃");
 			System.out.println("＃　　 　　[1]개인정보 보기   　　　　 　＃");
-			System.out.println("＃　　 　　[2]신청중인 도서 목록   　　　　 　＃");
-			System.out.println("＃　　 　　[3]대출중인 도서 목록   　　　　 　＃");
-			System.out.println("＃　　 　　[4]도서 신청 이력 보기   　　　　 　＃");
-			System.out.println("＃　　 　　[5]도서 대출 이력 보기   　　　　 　＃");
+			System.out.println("＃　　 　　[2]신청중인 도서 목록   　　　＃");
+			System.out.println("＃　　 　　[3]대출중인 도서 목록   　　　＃");
+			System.out.println("＃　　 　　[4]도서 신청 이력 보기   　　  ＃");
+			System.out.println("＃　　 　　[5]도서 대출 이력 보기   　　  ＃");
 			System.out.println("＃　　 　　[6]도서 반납하기   　　　　 　＃");
-			System.out.println("＃　　 　　[7]회원 정보 수정   　　 　　＃");
-			System.out.println("＃　　 　　[8]회원 탈퇴   　　　　 　＃");
-			System.out.println("＃　　 　　[9]상위 메뉴   　　　　　  　＃");
-			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
+			System.out.println("＃　　 　　[7]회원 정보 수정   　　 　　  ＃");
+			System.out.println("＃　　 　　[8]회원 탈퇴   　　　　       　＃");
+			System.out.println("＃　　 　　[9]상위 메뉴   　　　　　  　  ＃");
+			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
 			System.out.print("＃ 메뉴 선택 ▶ ");
 			select = sc.nextInt();
 			switch(select) {	
@@ -152,7 +152,7 @@ public class Main {
 				case 3:bor.borrow_list(account); break;
 				case 4:book.tot_application_list(account); break;
 				case 5:bor.tot_borrow_list(account); break;
-				case 6:bor.retunr_book(account);; break;
+				case 6:bor.return_book(account);; break;
 				case 7:mem.updateData(account); break;
 				case 8:mem.deleteData(account); break;
 				case 9: return;
@@ -166,17 +166,17 @@ public class Main {
 		Borrow_manage bor = new Borrow_manage();
 		while(true) {
 			
-			System.out.println("＃＃＃＃＃＃【도서 정보】＃＃＃＃＃＃");
-			System.out.println("＃　　 　　[1]도서 신청 하기 　　　     ＃");
-			System.out.println("＃　　 　　[2]도서 정보 조회　  　　　   ＃");
-			System.out.println("＃　　 　　[3]도서 대출  하기 　  　　　　　 ＃");
-			System.out.println("＃　　 　　[4]상위 메뉴 　  　　　　　 ＃");
-			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
+			System.out.println("＃＃＃＃＃＃＃＃【도서 정보】＃＃＃＃＃＃＃＃");
+			System.out.println("＃　　　　 　　[1]도서 정보 조회 　　　 　 ＃");
+			System.out.println("＃　　 　　　　[2]도서 신청 하기　　　 　    ＃");
+			System.out.println("＃　　 　　　　[3]도서 대출 하기 　  　   　＃");
+			System.out.println("＃　　 　　　　[4]상위 메뉴 　  　　　　　 ＃");
+			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
 			System.out.print("＃ 메뉴 선택 ▶ ");
 			select = sc.nextInt();
 			switch(select) {
-				case 1: book.application(account); break;
-				case 2: book.searchOrder(); break;
+				case 1: book.searchOrder(); break;
+				case 2: book.application(account); break;
 				case 3: bor.borrow_book(account); break;
 				case 4: return;
 				default:  System.out.println("# 잘못 입력하셨습니다..."); break;
@@ -186,6 +186,7 @@ public class Main {
 	public static void borrow_info() {
 		
 		while(true) {
+			
 			System.out.println("＃＃＃＃＃＃【도서 대출 관리】＃＃＃＃＃＃");
 			System.out.println("＃　　　 　　[1]도서 대출 　　　 　　　＃");
 			System.out.println("＃　　　 　　[2]도서 반납　　　    　　　＃");
@@ -209,11 +210,12 @@ public class Main {
 		
 		
 		while(true) {
+			
 			System.out.println("＃＃＃＃＃＃＃【관리  메뉴】＃＃＃＃＃＃＃");
 			System.out.println("＃　　　　 　[1]회원 관리　　　　　　　＃");
 			System.out.println("＃　　　　 　[2]도서 관리　　　　　　　＃");
 			System.out.println("＃　　 　　　[3]대출 관리　　　　　　　＃");
-			System.out.println("＃　　　　 　[4]로그아웃 　　　　 　   　＃");
+			System.out.println("＃　　　　 　[4]로그아웃 　　　　 　    ＃");
 			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
 			System.out.print("＃ 메뉴 선택 ▶ ");
 			select = sc.nextInt();
@@ -233,11 +235,12 @@ public class Main {
 		Member_manage mem = new Member_manage();
 		
 		while(true) {
+			
 			System.out.println("＃＃＃＃＃＃＃【회원  관리】＃＃＃＃＃＃＃");
 			System.out.println("＃　　　　 　[1]회원 목록　　　　　　　＃");
 			System.out.println("＃　　　　 　[2]회원 수정　　　　　　　＃");
 			System.out.println("＃　　 　　　[3]회원 삭제　　　　　　　＃");
-			System.out.println("＃　　　　 　[4]상위메뉴 　　　　 　   　＃");
+			System.out.println("＃　　　　 　[4]상위메뉴 　　　　 　    ＃");
 			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
 			System.out.print("＃ 메뉴 선택 ▶ ");
 			select = sc.nextInt();
@@ -256,13 +259,14 @@ public class Main {
 	public static void manage_book() {
 		Book_manage book = new Book_manage();
 		while(true) {
+			
 			System.out.println("＃＃＃＃＃＃＃【도서  관리】＃＃＃＃＃＃＃");
-			System.out.println("＃　　　　 　[1]도서 정보 추가　　　　　　　＃");
-			System.out.println("＃　　　　 　[2]도서 정보 보기　　　　　　　＃");
-			System.out.println("＃　　 　　　[3]도서 정보 수정　　　　　　　＃");
-			System.out.println("＃　　　　 　[4]도서 정보 삭제　　　　 　   　＃");
-			System.out.println("＃　　　　 　[5]신청 도서 관리　　　　 　   　＃");
-			System.out.println("＃　　　　 　[6]상위메뉴　　　　 　   　＃");
+			System.out.println("＃　　　　 　[1]도서 정보 추가　　　　  ＃");
+			System.out.println("＃　　　　 　[2]도서 정보 보기　　　　  ＃");
+			System.out.println("＃　　 　　　[3]도서 정보 수정　  　　   ＃");
+			System.out.println("＃　　　　 　[4]도서 정보 삭제　　 　    ＃");
+			System.out.println("＃　　　　 　[5]신청 도서 관리　 　        ＃");
+			System.out.println("＃　　　　 　[6]상위메뉴　　　　 　       ＃");
 			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
 			System.out.print("＃ 메뉴 선택 ▶ ");
 			select = sc.nextInt();
@@ -283,10 +287,11 @@ public class Main {
 	public static void application_manage() {
 		Book_manage book = new Book_manage();
 		while(true) {
-			System.out.println("＃＃＃＃＃＃＃【신청 도서 관리】＃＃＃＃＃＃＃");
-			System.out.println("＃　　　　 　[1]처리대기 도서 목록　　　　　　　＃");
-			System.out.println("＃　　　　 　[2]처리완료 도서 목록　　　　　　　＃");
-			System.out.println("＃　　　　 　[3]상위메뉴 　　　　 　   　＃");
+			
+			System.out.println("＃＃＃＃＃＃【신청 도서 관리】＃＃＃＃＃＃");
+			System.out.println("＃　　　　 　[1]처리대기 도서 목록　     ＃");
+			System.out.println("＃　　　　 　[2]처리완료 도서 목록　　 ＃");
+			System.out.println("＃　　　　 　[3]상위메뉴 　　　　 　   ＃");
 			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
 			System.out.print("＃ 메뉴 선택 ▶ ");
 			select = sc.nextInt();
@@ -305,10 +310,10 @@ public class Main {
 		Borrow_manage bor = new Borrow_manage();
 		while(true) {
 			System.out.println("＃＃＃＃＃＃＃【대출 관리】＃＃＃＃＃＃＃");
-			System.out.println("＃　　　　 　[1]대출 도서 목록　　　　　　　＃");
-			System.out.println("＃　　　　 　[2]반납 도서 목록　　　　　　　＃");
-			System.out.println("＃　　　　 　[3]상위메뉴 　　　　 　   　＃");
-			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
+			System.out.println("＃　　　　 　[1]대출 도서 목록　　　　＃");
+			System.out.println("＃　　　　 　[2]반납 도서 목록　　　　＃");
+			System.out.println("＃　　　　 　[3]상위메뉴 　　　　 　  ＃");
+			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
 			System.out.print("＃ 메뉴 선택 ▶ ");
 			select = sc.nextInt();
 			switch(select) {

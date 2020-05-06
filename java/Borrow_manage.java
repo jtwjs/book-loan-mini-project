@@ -53,26 +53,46 @@ public class Borrow_manage {
 	
 	public void borrow_book(String account) {
 		
-		System.out.println("＃＃＃＃＃＃【대출 정보 입력】＃＃＃＃＃＃");
-		id=account;
-//		System.out.print("# [청구기호]▶ ");
-		System.out.print("# [도 서 명]▶ ");
-		book_title = sc.next();
+		
+		
+		
 		int size =0;
 		int p=0;
+		int max =0;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		PreparedStatement pstmt2 = null; //도서명으로 출력
 		PreparedStatement pstmt3 = null;
+		PreparedStatement pstmt4 = null;
 		ResultSet rs = null;
 		ResultSet rs3 = null;
+		ResultSet rs4 = null;
 		
 		try {
+			System.out.println("＃＃＃＃＃＃【대출 정보 입력】＃＃＃＃＃＃");
+			id=account;
+			System.out.print("# [도 서 명]▶ ");
+			book_title = sc.next();
+			
 			
 			Class.forName(driver);
 			conn = DriverManager.getConnection(url,"scott","123456");
-			pstmt3 = conn.prepareStatement("select count(*) from BOOK_INFO where title = ?");
-			pstmt3.setString(1,book_title);
+			
+			pstmt4 = conn.prepareStatement("select count(*) from book_borrow where id = ?");
+			pstmt4.setString(1, account);
+			rs4 = pstmt4.executeQuery();
+			if(rs4.next()) {
+			max = rs4.getInt(1);}
+			if(max>3) {
+				System.out.println("# 최대 대출권수를 초과하엿습니다.. (최대3) "); return;
+			}
+			
+			
+			
+			
+			
+			pstmt3 = conn.prepareStatement("select count(*) from BOOK_INFO where title like ? and inventory_quantity >0 ");
+			pstmt3.setString(1,"%"+book_title+"%");
 			rs3 = pstmt3.executeQuery();
 			if(rs3.next()) {
 				size = rs3.getInt(1);}
@@ -84,22 +104,24 @@ public class Borrow_manage {
 			pstmt2 = conn.prepareStatement("Select * FROM"
 					+ " (Select ROWNUM rnum, A.* FROM"
 					+ " (Select * FROM BOOK_INFO"
-					+ " where title = ?"
+					+ " where title like ?"
+					+ " and inventory_quantity >0"
 					+ " order by title asc) A)"
 					,ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE); // 양방향 
 			
 			
-			pstmt2.setString(1, book_title);
+			pstmt2.setString(1, "%"+book_title+"%");
 			rs = pstmt2.executeQuery();
-			System.out.println("＃＃＃＃＃＃＃＃＃【도서 목록 출력】＃＃＃＃＃＃＃＃＃");
-			System.out.println("＃［NO］     [청구기호]  [책이름]  [출판사]  [재고]");
+			
+			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃【도서 목록 출력】＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
+			System.out.println("＃［NO］     [청구기호]       [책이름]        [출판사]  [재고]");
 			while(rs.next()) {
 			int no = rs.getInt(1);
 			claim = rs.getString(2);
 			book_title = rs.getString(3);
 			 pub = rs.getString(5);
 			 stock = rs.getString(8);
-			System.out.printf("# [%s] %6s  %6s %6s %6s\n",no,claim,book_title,pub,stock);
+			System.out.printf("# [%s] %-15s  %-20s %-8s %4s\n",no,claim,book_title,pub,stock);
 			}
 			if(size==0){
 				System.out.print("# ◀ 뒤로가려면 아무키나 입력하시오 ");
@@ -107,7 +129,7 @@ public class Borrow_manage {
 				switch(select) {
 				default : return;}
 				}
-			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
+			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
 			while(true) {
 			System.out.println("# 대출할 도서의 [NO] 를 입력 하세요.. ");
 			System.out.print("# ");
@@ -150,17 +172,19 @@ public class Borrow_manage {
 				if(pstmt != null) pstmt.close();
 				if(pstmt2 != null) pstmt2.close();
 				if(pstmt3 != null) pstmt3.close();
+				if(pstmt4 != null) pstmt4.close();
 			}catch(Exception e) {
 			}
 			try {
 				if(rs != null) rs.close();
 				if(rs3 != null) rs3.close();
+				if(rs4 != null) rs4.close();
 			}catch(Exception e) {
 			}
 		}
 	}
 	
-	public void retunr_book(String account) {
+	public void return_book(String account) {
 		System.out.println("＃＃＃＃＃＃【대출 도서 목록】＃＃＃＃＃＃");
 		
 		
@@ -177,13 +201,13 @@ public class Borrow_manage {
 			
 			Class.forName(driver);
 			conn = DriverManager.getConnection(url,"scott","123456");
-			pstmt3 = conn.prepareStatement("select count(*) from BOOK_borrow where id=?");
+			pstmt3 = conn.prepareStatement("select count(*) from backup_borrow where id=?");
 			pstmt3.setString(1,account);
 			rs3 = pstmt3.executeQuery();
 			if(rs3.next()) {
 				size = rs3.getInt(1);}
 			System.out.println("#");
-			System.out.println("#'"+account+"'님 이 대출중인 도서 검색 결과이며, 총 "+size+"건이 검색되었습니다.");
+			System.out.println("#'"+account+"'님 의 대출기록 이며, 총 "+size+"건이 검색되었습니다.");
 			System.out.println("#");
 				
 			
@@ -191,21 +215,22 @@ public class Borrow_manage {
 					+ " (Select ROWNUM rnum, A.* FROM"
 					+ " (Select * FROM BOOK_BORROW"
 					+ " where id = ?"
-					+ " order by title asc) A)"
+					+ " order by borrow_title asc) A)"
 					,ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE); // 양방향 
 			
 			
 			pstmt2.setString(1, account);
 			rs = pstmt2.executeQuery();
-			System.out.println("＃＃＃＃＃＃＃＃＃【도서 목록 출력】＃＃＃＃＃＃＃＃＃");
+			
+			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃【도서 목록 출력】＃＃＃＃＃＃＃＃＃＃＃＃");
 			System.out.println("＃［NO］   [책이름]  [출판사]  [대출날짜]  [반납기간]");
 			while(rs.next()) {
 			int no = rs.getInt(1);
-			String book_title1 = rs.getString(4);
+			String title = rs.getString(4);
 			String pub = rs.getString(5);
 			String br_date = rs.getString(6);
 			String rt_date = rs.getString(7);
-			System.out.printf("# [%s] %6s  %6s %6s %6s\n",no,book_title1,pub,br_date,rt_date);
+			System.out.printf("# [%s] %6s  %6s %6s %6s\n",no,title,pub,br_date,rt_date);
 			}
 			if(size==0){
 				System.out.print("# ◀ 뒤로가려면 아무키나 입력하시오 ");
@@ -213,7 +238,7 @@ public class Borrow_manage {
 				switch(select) {
 				default : return;}
 				}
-			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
+			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
 			while(true) {
 			System.out.println("# 반납할 도서의 [NO] 를 입력 하세요.. ");
 			System.out.print("# ");
@@ -282,7 +307,7 @@ public class Borrow_manage {
 			
 			pstmt.setString(1,account);
 			rs = pstmt.executeQuery();
-			System.out.println("＃＃＃＃＃＃＃＃＃【대출 목록 출력】＃＃＃＃＃＃＃＃＃");
+			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃【대출 도서 목록】＃＃＃＃＃＃＃＃＃＃＃＃");
 			System.out.println("＃［NO］     [책이름]  [출판사]  [대출날짜]  [반납기간]");
 			while(rs.next()) {
 				String no = rs.getString(1);
@@ -292,7 +317,7 @@ public class Borrow_manage {
 				String rt_date = rs.getString(5);
 				System.out.printf("# [%s] %6s  %6s %10s %10s\n",no,title,pub,br_date.substring(0,10),rt_date.substring(0,10));
 			}
-			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
+			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
 		
 			System.out.print("# ◀ 뒤로가려면 아무키나 입력하시오 ");
 			select = sc.next();
@@ -356,7 +381,8 @@ public class Borrow_manage {
 			pstmt.setString(2,denum+"");
 			
 			rs = pstmt.executeQuery();
-			System.out.println("＃＃＃＃＃＃＃＃＃【전체 대출 목록 출력】＃＃＃＃＃＃＃＃＃");
+			
+			System.out.println("＃＃＃＃＃＃＃＃＃＃＃【전체 대출 목록 출력】＃＃＃＃＃＃＃＃＃＃");
 			System.out.println("＃［NO］     [책이름]  [출판사]  [대출날짜]  [반납기간]");
 			while(rs.next()) {
 				int no = rs.getInt(1);
@@ -369,7 +395,7 @@ public class Borrow_manage {
 				String rt_date = rs.getString(6);
 				System.out.printf("# [%s] %6s %6s %6s %10s %10s\n",no,id,title,pub,br_date.substring(0,10),rt_date.substring(0,10));
 			}
-			System.out.println("＃＃＃＃＃＃＃＃＃＃◀[1]&[2]▶＃＃＃＃＃＃[EXIT]");
+			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃◀[1]&[2]▶＃＃＃＃＃＃＃＃＃[EXIT]");
 			System.out.print("＃ ");
 			select = sc.next();
 			switch(select) {
@@ -426,7 +452,7 @@ public class Borrow_manage {
 			Class.forName(driver);
 			conn = DriverManager.getConnection(url,"scott","123456");
 			
-			pstmt2 = conn.prepareStatement("select count(*) from back_BORROW where id = ?");
+			pstmt2 = conn.prepareStatement("select count(*) from backup_BORROW where id = ?");
 			pstmt2.setString(1, account);
 			rs2 = pstmt2.executeQuery();
 			if(rs2.next()) {
@@ -448,7 +474,8 @@ public class Borrow_manage {
 			
 			pstmt.setString(1,account);
 			rs = pstmt.executeQuery();
-			System.out.println("＃＃＃＃＃＃＃＃＃【대출 이력 출력】＃＃＃＃＃＃＃＃＃");
+			
+			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃【대출 이력 출력】＃＃＃＃＃＃＃＃＃＃＃＃");
 			System.out.println("＃［NO］     [책이름]  [출판사]  [대출날짜]  [반납날짜]");
 			while(rs.next()) {
 				String no = rs.getString(1);
@@ -459,7 +486,7 @@ public class Borrow_manage {
 				System.out.printf("# [%s] %6s  %6s %8s %8s\n",no,title,pub,br_date.substring(0,10),rt_date.substring(0,10));
 				
 			}
-			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
+			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃＃");
 			System.out.print("# ◀ 뒤로가려면 아무키나 입력하시오 ");
 			select = sc.next();
 			switch(select) {
@@ -525,7 +552,8 @@ public class Borrow_manage {
 			pstmt.setString(2,denum+"");
 			
 			rs = pstmt.executeQuery();
-			System.out.println("＃＃＃＃＃＃＃＃＃【전체 대출 목록 출력】＃＃＃＃＃＃＃＃＃");
+			
+			System.out.println("＃＃＃＃＃＃＃＃＃＃＃【전체 대출 목록 출력】＃＃＃＃＃＃＃＃＃＃＃");
 			System.out.println("＃［NO］ [ID]    [책이름]  [출판사]  [대출날짜]  [반납기간]");
 			while(rs.next()) {
 				int no = rs.getInt(1);
@@ -538,7 +566,7 @@ public class Borrow_manage {
 				String rt_date = rs.getString(6);
 				System.out.printf("# [%s] %6s %6s %6s %10s %10s\n",no,id,title,pub,br_date.substring(0,10),rt_date.substring(0,10));
 			}
-			System.out.println("＃＃＃＃＃＃＃＃＃＃◀[1]&[2]▶＃＃＃＃＃＃[EXIT]");
+			System.out.println("＃＃＃＃＃＃＃＃＃＃＃＃＃◀[1]&[2]▶＃＃＃＃＃＃＃＃＃[EXIT]");
 			System.out.print("＃ ");
 			select = sc.next();
 			switch(select) {
